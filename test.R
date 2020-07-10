@@ -1,13 +1,11 @@
+## Gaussian blur
 data <- read.csv("/Users/chaokuan-hao/Documents/BIO_IT_Station/Proteomics/alldata.ctrl.csv", header=T, sep=",")
 colnames(data)
-
-
 
 H_4_row <- data[grep("Percentage.H.", colnames(data),value=T)][4,]
 H_4_row
 
 plot(c(1:27), H_4_row)
-
 
 myMatrix <- as.matrix(H_4_row)
 
@@ -17,13 +15,10 @@ x <- seq(1, 11, by = 1)
 y <- dnorm(x, mean = 6, sd = 0.5)
 # plot(x,y)
 
-
 kernel <- as.matrix(y)
-
 convolved_result <- convolve(myMatrix, kernel, type="open")
-
 plot(c(1:27), convolved_result[6:32])
 
-
+## PrInCE
 
 
