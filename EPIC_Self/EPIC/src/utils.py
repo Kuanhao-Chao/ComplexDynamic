@@ -326,7 +326,8 @@ def predict_clusters(predF, outF):
 	os.system(clustering_CMD)
 
 def load_data(data, scores, orthmap="", fc=2, mfc=1):
-
+	print "##### data: "
+	print data
 	if type(data) is list:
 		paths = data
 	else:

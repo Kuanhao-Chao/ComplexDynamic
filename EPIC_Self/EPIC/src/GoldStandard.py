@@ -1157,7 +1157,7 @@ class Inparanoid():
 		protID2prot = {}
 		orthgroups = []
 		targetGenes = set([])
-		for species in xmldoc.getElementsByTagName('species'): 
+		for species in xmldoc.getElementsByTagName('species'):
 			for protlist in species.getElementsByTagName('genes'):
 				for prot in protlist.getElementsByTagName('gene'):
 					if species.getAttribute('NCBITaxId') != "9606": targetGenes.add(str(prot.getAttribute('protId')))
@@ -1195,7 +1195,7 @@ class Inparanoid():
 	def getXML(self):
 		url_str = 'http://inparanoid.sbc.su.se/download/current/Orthologs_OrthoXML/%s/%s-%s.orthoXML'
 		first = self.species
-		second = "H.sapiens"	
+		second = "H.sapiens"
 		if self.species > "H.sapiens":
 			first = "H.sapiens"
 			second = self.species

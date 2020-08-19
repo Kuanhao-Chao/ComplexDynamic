@@ -28,7 +28,7 @@ from collections import defaultdict
 from bs4 import BeautifulSoup
 import urllib
 import urllib2
-import os 
+import os
 import re
 import gzip
 import requests
@@ -105,9 +105,9 @@ class ElutionData():
 	# Class constructor
 	# @Param:
 	#		elutionProfileF flat file containing co elution data where each row represents a protein and collums contain spectral counts
-	# @Class objects: 
-	#		self.elutionMat numpy matric cnsisting of only the counts 
-	#		self.normedElutionMat numpy matric containing normalized spectral counts 
+	# @Class objects:
+	#		self.elutionMat numpy matric cnsisting of only the counts
+	#		self.normedElutionMat numpy matric containing normalized spectral counts
 	#		self.prot2Index dictonary mapping protein to it's respective row index in self.elutionMat and self.normedElutionMat
 	def __init__(self, elutionProfileF, frac_count=2, max_frac_count=1):
 		self.name = os.path.split(elutionProfileF)[-1]
@@ -159,13 +159,13 @@ class ElutionData():
 		self.elutionMat = np.array(newMat)
 		self.prot2Index = newprot2Index
 		self.normedElutionMat = normalize_fracs(self.elutionMat)
-		
+
 
 	# @author: Florian Goebels
 	# return nurmalized co elution matrix, Normalization is based on previously published methods Pierre 2012 et al.
 	def normalizeCoEulitionMat(self):
 		self.elutionMat = normalize_fracs(self.elutionMat)
-		
+
 
 	# @author: Florian Goebels
 	# returns elution profile of a given protein. If the protein has no profile the method returns NaN
@@ -174,11 +174,11 @@ class ElutionData():
 	def getElution(self, prot, normed=False):
 		if prot not in self.prot2Index:
 			return None
-		if normed: 
+		if normed:
 			return self.normedElutionMat[self.prot2Index[prot]]
 		else:
 			return self.elutionMat[self.prot2Index[prot]]
-	
+
 
 	# @author: Florian Goebels
 	# returns true if there is elution profile for a protein
@@ -413,7 +413,7 @@ class Poisson:
 
 # @ author Florian Goebels
 # returns Mutual Information of two proteins
-# mutual information is based on entropy calculation MI(x,y) = H(x) + H(y) - H(x,y) 
+# mutual information is based on entropy calculation MI(x,y) = H(x) + H(y) - H(x,y)
 # wehre H means entropy
 def calculateScore_MI(a, b):
 	entropy_a, a_upper, a_lower, _ = a
@@ -446,7 +446,7 @@ class MutualInformation():
 		self.name="MI"
 		self.minCounts = minCounts
 		self.parallel = True
-	
+
 	def init(self, elutionData):
 		fname = "%s.%s" % (elutionData.name, self.name)
 		global prot2profile
@@ -532,11 +532,11 @@ class Pearson:
 
 	def get_name(self):
 		return self.name
-	
+
 # @ author Lucas Ming Hu
 # This is a helper class for getting GeneMANIA functional evidence for a given ElutionData object
 class Genemania:
-	
+
 	def __init__(self, taxID):
 		self.taxoID = taxID
 		#create a protein_pair_mapping dictionary, GeneManiaName - UniProtName
@@ -554,15 +554,15 @@ class Genemania:
 		self.load_genemania()
 
 	# @auothor Lucas Ming Hu
-	# the catchFile function can help to download files from GeneMANIA website automatically.	
-	def catchFile(self): 
-		taxoIDspeciesDic = {'3702':'Arabidopsis_thaliana', '6239':'Caenorhabditis_elegans', '7955':'Danio_rerio', 
+	# the catchFile function can help to download files from GeneMANIA website automatically.
+	def catchFile(self):
+		taxoIDspeciesDic = {'3702':'Arabidopsis_thaliana', '6239':'Caenorhabditis_elegans', '7955':'Danio_rerio',
 		                    '7227':'Drosophila_melanogaster','562':'Escherichia_coli','9606':'Homo_sapiens',
-		                    '10090':'Mus_musculus','10116':'Rattus_norvegicus','4932':'Saccharomyces_cerevisiae'} 
-		
+		                    '10090':'Mus_musculus','10116':'Rattus_norvegicus','4932':'Saccharomyces_cerevisiae'}
+
 		if self.taxoID not in taxoIDspeciesDic:
 			return None #TODO throw illegal argument exception
-	
+
 		#urlbase = 'http://genemania.org/data/current'
 		urlbase = 'http://genemania.org/data/archive/2014-10-15/'
 		speciesURL = os.path.join(urlbase, taxoIDspeciesDic[self.taxoID])
@@ -570,25 +570,25 @@ class Genemania:
 #		soup = BeautifulSoup(r)
 
 		soup = BeautifulSoup(r, "html.parser")
-    
+
 		table = soup.find('table')
-    
+
 		allcell = []
 		for row in table.find_all('tr'):
 			for col in row.find_all('td'):
 				allcell.append(col.getText())
 
-		#filtering 
+		#filtering
 		#self.files = []
 		for c in allcell:
 			if '.txt' in c:
 				self.files.append(os.path.join(speciesURL,c))
 
-	# @author: Lucas Ming Hu        
-	# a helper function to get the average of the GeneMANIA scores 
+	# @author: Lucas Ming Hu
+	# a helper function to get the average of the GeneMANIA scores
 	# for each line of evidence
 	def average(self, secondaryEvidenceDic):
-		resultDict = defaultdict(float)		
+		resultDict = defaultdict(float)
 		for key in secondaryEvidenceDic:
 			resultDict[key] = sum(secondaryEvidenceDic[key]) * 1.0 / len(secondaryEvidenceDic[key])
 		return resultDict
@@ -654,7 +654,7 @@ class Genemania:
 	# read name mapping database and put Uniprot and corresponding GeneMANIA name into a dictionary
 	# key: GeneMANIA_name value: Uniprot_name
 	def map_proteinNames(self):
-		
+
 		taxoIDurl = {'6239':'http://www.uniprot.org/uniprot/?query=taxonomy%3A6239&sort=score&columns=id,genes(ORF)&format=tab',
 					 '3702':'http://www.uniprot.org/uniprot/?query=taxonomy%3A3702&sort=score&columns=id,genes(OLN)&format=tab',
 					 '7955':'http://www.uniprot.org/uniprot/?query=taxonomy%3A7955&sort=score&columns=id,database(Ensembl)&format=tab',
@@ -662,33 +662,33 @@ class Genemania:
 					 '4932':'http://www.uniprot.org/uniprot/?query=taxonomy%3A4932&sort=score&columns=id,genes&format=tab'}
 
 		response = urllib2.urlopen(taxoIDurl[self.taxoID])
-		
+
 		html = response.readlines() #return everything in a list, each item in the list is a line in original file
-		
+
 		unipront_geneNames_dic = {}
-		
+
 		for item in html[1:]:
-			
+
 			items = item.split("\t")
 			uniprot = items[0]
 
 			geneNames = items[1].strip(';') #some names has ; at the end
 			geneNames = items[1].strip()
-			
+
 			genes_list = re.split('[;\s\|\/]', geneNames)
-			
+
 			new_list = list(genes_list) #make a new list to clone original list, otherwise, the code wont work.
-			
+
 			for gene_names in genes_list:
-			    
+
 				if "CELE" in gene_names:
 					new_list.remove(gene_names)
-			
+
 			new_list = filter(None, new_list) #remove the empty item from the list
-				
+
 			if len(new_list) > 0 :
 				unipront_geneNames_dic[uniprot] = new_list
-			
+
 		for key, value in unipront_geneNames_dic.iteritems():
 			for i in range(0, len(value)):
 				if value[i] not in self.nameMappingDict:
@@ -861,7 +861,7 @@ class CalculateCoElutionScores():
 
 	# @author: Florian Goebels
 	# create co elution table for a given list of scores and ppis
-	# @Param:	
+	# @Param:
 	#		scoreTypes	a list of co elutoin score objects
 	#		PPIs		a list of ppis for which all scores in scoreTypes schoukd be calculated
 	def calculateScores(self, toPred, tokeep=set([])):
@@ -1346,4 +1346,3 @@ class STRING:
 	# the getScoreCalc function will return the self.scoreCalc .
 	def getScoreCalc(self):
 		return self.scoreCalc
-
